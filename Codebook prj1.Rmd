@@ -1,0 +1,137 @@
+---
+title: "Codebook for Course Project 1 (Exploratory Data Analysis)"
+author: "Gunther Baugh"
+date: "February 22, 2019"
+output: html_document
+---
+
+set libraries
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("~/Repositories/CourseExplDataAnalysis/Assignment1/ExData_Plotting1/")
+
+```
+
+
+
+###Loading the data
+load dataset
+
+    Dataset: [Electric power consumption [20Mb] (https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip) 
+    Description: Measurements of electric power consumption in one household with a one-minute sampling rate over a period of almost 4 years. Different electrical quantities and some sub-metering values are available.
+
+The following descriptions of the 9 variables in the dataset are taken from the UCI web site:
+
+    Date: Date in format dd/mm/yyyy
+    Time: time in format hh:mm:ss
+    Global_active_power: household global minute-averaged active power (in kilowatt)
+    Global_reactive_power: household global minute-averaged reactive power (in kilowatt)
+    Voltage: minute-averaged voltage (in volt)
+    Global_intensity: household global minute-averaged current intensity (in ampere)
+    Sub_metering_1: energy sub-metering No. 1 (in watt-hour of active energy). It corresponds to the kitchen, containing mainly a dishwasher, an oven and a microwave (hot plates are not electric but gas powered).
+    Sub_metering_2: energy sub-metering No. 2 (in watt-hour of active energy). It corresponds to the laundry room, containing a washing-machine, a tumble-drier, a refrigerator and a light.
+    Sub_metering_3: energy sub-metering No. 3 (in watt-hour of active energy). It corresponds to an electric water-heater and an air-conditioner.
+    
+    
+
+When loading the dataset into R, please consider the following:
+
+    The dataset has 2,075,259 rows and 9 columns. First calculate a rough estimate of how much memory the dataset will require in memory before reading into R. Make sure your computer has enough memory (most modern computers should be fine).
+    We will only be using data from the dates 2007-02-01 and 2007-02-02. One alternative is to read the data from just those dates rather than reading in the entire dataset and subsetting to those dates.
+    You may find it useful to convert the Date and Time variables to Date/Time classes in R using the strptime()\color{red}{\verb|strptime()|}strptime()  and as.Date()\color{red}{\verb|as.Date()|}as.Date() functions.
+    Note that in this dataset missing values are coded as ?\color{red}{\verb|?|}?.
+    
+```{r LoadData, include=FALSE}
+
+EPCdataset <- read.delim2("~/Repositories/CourseExplDataAnalysis/Assignment1/ExData_Plotting1/household_power_consumption.txt", header = TRUE, sep = ";", dec = ".", colClasses=c("character", "character", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric"), na.strings=c("?"))
+EPCdataset <- subset(EPCdataset, Date == "1/2/2007" | Date == "2/2/2007" )
+EPCdataset$datetime <- strptime(paste(EPCdataset$Date, EPCdataset$Time),format="%d/%m/%Y %H:%M:%S") 
+
+```
+    
+    
+    
+  Making Plots
+
+Our overall goal here is simply to examine how household energy usage varies over a 2-day period in February, 2007. Your task is to reconstruct the following plots below, all of which were constructed using the base plotting system.
+
+First you will need to fork and clone the following GitHub repository: https://github.com/rdpeng/ExData_Plotting1
+
+For each plot you should
+
+    Construct the plot and save it to a PNG file with a width of 480 pixels and a height of 480 pixels.
+    Name each of the plot files as plot1.png\color{red}{\verb|plot1.png|}plot1.png, plot2.png\color{red}{\verb|plot2.png|}plot2.png, etc.
+    Create a separate R code file (plot1.R\color{red}{\verb|plot1.R|}plot1.R, plot2.R\color{red}{\verb|plot2.R|}plot2.R, etc.) that constructs the corresponding plot, i.e. code in plot1.R\color{red}{\verb|plot1.R|}plot1.R constructs the plot1.png\color{red}{\verb|plot1.png|}plot1.png plot. Your code file should include code for reading the data so that the plot can be fully reproduced. You must also include the code that creates the PNG file.
+    Add the PNG file and R code file to the top-level folder of your git repository (no need for separate sub-folders)
+
+When you are finished with the assignment, push your git repository to GitHub so that the GitHub version of your repository is up to date. There should be four PNG files and four R code files, a total of eight files in the top-level folder of the repo.
+
+The four plots to construct:
+1. "Global Active Power" : frequency~Global Active Power (kilowatts)
+```{r Plot1, include=FALSE}
+ png("plot1.png", width=480, height=480)
+ hist(EPCdataset$Global_active_power, col="red", main="Global Active Power", xlab="Global Active Power (kilowatts)")
+ dev.off()
+```
+
+2. "": "Global Active Power" (kilowatts)~datetime
+```{r Plot2, include=FALSE}
+ png("plot2.png", width=480, height=480)
+ plot(EPCdataset$datetime, EPCdataset$Global_active_power, type="l", xlab="", ylab="Global Active Power (kilowatts)")
+ dev.off()
+
+```
+
+3. "": "Energy sub metering" ~ datetime; Sub_metering_1, Sub_metering_2, Sub_metering_3 
+```{r Plot3, include=FALSE}
+ png("plot3.png", width=480, height=480)
+ plot(EPCdataset$datetime, EPCdataset$Sub_metering_1, type="l", ylab="Energy sub metering", xlab="")
+ lines(EPCdataset$datetime, EPCdataset$Sub_metering_2, type="l", col="red")
+ lines(EPCdataset$datetime, EPCdataset$Sub_metering_3, type="l", col="blue")
+ legend("topleft", c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"), lty=1, lwd=2.5, col=c("black", "red", "blue"))
+ dev.off()
+```
+
+4. a) "Global Active Power" b)Voltage;, c)"Energy sub metering"; d) Global_reactive_power; ~ datetime
+```{r Plot4, include=FALSE}
+png("plot4.png", width=480, height=480)
+
+par(mfrow = c(2, 2)) 
+plot(EPCdataset$datetime, EPCdataset$Global_active_power, type="l", xlab="", ylab="Global Active Power", cex=0.2)
+plot(EPCdataset$datetime, EPCdataset$Voltage, type="l", xlab="datetime", ylab="Voltage")
+
+plot(EPCdataset$datetime, EPCdataset$Sub_metering_1, type="l", ylab="Energy sub metering", xlab="")
+lines(EPCdataset$datetime, EPCdataset$Sub_metering_2, type="l", col="red")
+lines(EPCdataset$datetime, EPCdataset$Sub_metering_3, type="l", col="blue")
+legend("topright", c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"), lty=, lwd=2.5, col=c("black", "red", "blue"), bty="o")
+
+plot(EPCdataset$datetime, EPCdataset$Global_reactive_power, type="l", xlab="datetime", ylab="Global_reactive_power")
+
+dev.off() 
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
